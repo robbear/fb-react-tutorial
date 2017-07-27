@@ -47,27 +47,48 @@ class Game extends React.Component {
   constructor() {
     super();
     this.state = {
-      squares: Array(9).fill(null),
-      xIsNext: true
+      history: [
+        {
+          squares: Array(9).fill(null)
+        }
+      ],
+      xIsNext: true,
+      stepNumber: 0
     };
   }
   
   handleClick(i) {
-    // Make a copy of the current squares state
-    const squares = this.state.squares.slice();
+    const history = this.state.history;
+    const current = history[history.length - 1];
+    const squares = current.squares.slice();
     if (calculateWinner(squares) || squares[i]) {
       return;
     }
     
     squares[i] = this.state.xIsNext ? 'X' : 'O';
     this.setState({
-      squares: squares,
-      xIsNext: !this.state.xIsNext
+      history: history.concat([
+        {
+          squares: squares
+        }
+      ]),
+      xIsNext: !this.state.xIsNext,
+      stepNumber: this.state.stepNumber + 1
+    });
+  }
+  
+  jumpTo(index) {
+    this.setState({
+      stepNumber: index,
+      xIsNext: (index % 2) === 0
     });
   }
     
   render() {
-    const winner = calculateWinner(this.state.squares);
+    const history = this.state.history;
+    const current = history[this.state.stepNumber];
+    const squares = current.squares;
+    const winner = calculateWinner(squares);
     let status;
     if (winner) {
       status = `Winner: ${winner}`;
@@ -75,18 +96,30 @@ class Game extends React.Component {
     else {
       status = `Next player: ${this.state.xIsNext ? 'X' : 'O'}`;
     }
+    
+    const moves = history.map((squares, i) => {
+      const desc = i ?
+        `Move #${i}` :
+        `Game start`;
+        
+      return (
+        <li key={i}>
+          <a href = "#" onClick={() => this.jumpTo(i)}>{desc}</a>
+        </li>
+      );
+    });
 
     return (
       <div className="game">
         <div className="game-board">
           <Board 
-            squares = {this.state.squares}
+            squares = {squares}
             onClick={(i) => this.handleClick(i)} 
           />
         </div>
         <div className="game-info">
           <div>{status}</div>
-          <ol>{/* TODO */}</ol>
+          <ol>{moves}</ol>
         </div>
       </div>
     );
