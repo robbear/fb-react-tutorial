@@ -107,9 +107,14 @@ class Game extends React.Component {
         `Move #${i}` :
         `Game start`;
         
+      let link = <a href = "#" onClick={() => this.jumpTo(i)}>{desc}</a>;
+      if (i === this.state.stepNumber) {
+        link = (<b>{link}</b>);
+      }
+
       return (
         <li key={i}>
-          <a href = "#" onClick={() => this.jumpTo(i)}>{desc}</a>
+          {link}
         </li>
       );
     });
