@@ -65,6 +65,11 @@ class Game extends React.Component {
       return;
     }
     
+    // Ignore clicks if the user is reviewing history
+    if (this.state.stepNumber < (history.length - 1)) {
+      return;
+    }
+    
     squares[i] = this.state.xIsNext ? 'X' : 'O';
     this.setState({
       history: history.concat([
